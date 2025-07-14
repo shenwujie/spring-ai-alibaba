@@ -59,4 +59,10 @@ spring-ai-alibaba-jmanus/ui-vue3/pnpm-lock.yaml
 .specstory/history/2025-07-08_03-24Z-generate-a-name-for-the-chat.md
 .specstory/history/2025-07-09_05-58Z-just-a-friendly-hello.md
 .gitignore
+
+
+# 忽略 .specstory 文件夹
+.specstory/
+
+# 忽略application.yml 文件
 spring-ai-alibaba-jmanus/src/main/resources/application.yml
