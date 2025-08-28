@@ -56,6 +56,7 @@ export interface ApiResponse<T = any> {
 
 export class McpApiService {
   private static readonly BASE_URL = '/api/mcp'
+  private static readonly METADATA_BASE_URL = '/api/mcp/config/metadata'
 
   /**
    * Get all MCP server configurations
@@ -229,6 +230,61 @@ export class McpApiService {
         success: false,
         message: error instanceof Error ? error.message : 'Failed to disable, please retry'
       }
+    }
+  }
+
+  /**
+   * Get form metadata for MCP configuration
+   */
+  public static async getFormMetadata(isEditMode: boolean): Promise<any> {
+    try {
+      const endpoint = isEditMode 
+        ? `${this.METADATA_BASE_URL}/vo` 
+        : `${this.METADATA_BASE_URL}/request`
+      
+      const response = await fetch(endpoint)
+      if (!response.ok) {
+        throw new Error(`Failed to get form metadata: ${response.status}`)
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error('Failed to get form metadata:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Get validation rules for MCP configuration
+   */
+  public static async getValidationRules(): Promise<any> {
+    try {
+      const response = await fetch(`${this.METADATA_BASE_URL}/validation`)
+      if (!response.ok) {
+        throw new Error(`Failed to get validation rules: ${response.status}`)
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error('Failed to get validation rules:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Get form schema for MCP configuration
+   */
+  public static async getFormSchema(): Promise<any> {
+    try {
+      const response = await fetch(`${this.METADATA_BASE_URL}/schema`)
+      if (!response.ok) {
+        throw new Error(`Failed to get form schema: ${response.status}`)
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error('Failed to get form schema:', error)
+      throw error
     }
   }
 }

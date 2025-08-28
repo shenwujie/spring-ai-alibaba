@@ -135,10 +135,11 @@
           </div>
         </div>
         <div class="detail-content">
-          <McpConfigForm
+          <DynamicMcpConfigForm
             :form-data="configForm"
             :is-edit-mode="true"
-            @connection-type-change="handleConnectionTypeChange"
+            @update:form-data="(data: any) => Object.assign(configForm, data)"
+            @validation-change="handleValidationChange"
           />
         </div>
       </div>
@@ -159,11 +160,11 @@
           </div>
         </div>
         <div class="detail-content">
-          <McpConfigForm
+          <DynamicMcpConfigForm
             :form-data="configForm"
             :is-edit-mode="false"
             @update:form-data="(data: any) => Object.assign(configForm, data)"
-            @connection-type-change="handleConnectionTypeChange"
+            @validation-change="handleValidationChange"
           />
         </div>
       </div>
@@ -253,7 +254,8 @@ import MonacoEditor from '@/components/MonacoEditor.vue'
 import ConfigPanel from './components/configPanel.vue'
 import Modal from '@/components/modal/index.vue'
 import { Icon } from '@iconify/vue'
-import McpConfigForm from './components/McpConfigForm.vue' // Import new form component
+import McpConfigForm from './components/McpConfigForm.vue' // Import old form component
+import DynamicMcpConfigForm from './components/DynamicMcpConfigForm.vue' // Import new dynamic form component
 import JsonImportPanel from './components/JsonImportPanel.vue'
 import { useMcpConfigForm } from '@/composables/useMcpConfigForm'
 import { useMessage } from '@/composables/useMessage'
@@ -435,11 +437,14 @@ const handleDeleteServer = async () => {
 
 // Handle save
 const handleSave = async () => {
-  // Use form validation
-  const validation = validateForm()
-  if (!validation.isValid) {
-    showMessage(validation.errors[0], 'error')
-    return
+  // 获取动态表单组件的引用
+  const dynamicFormRef = document.querySelector('.dynamic-form')?.__vueParentComponent?.exposed
+  if (dynamicFormRef?.validateForm) {
+    const validation = dynamicFormRef.validateForm()
+    if (!validation.isValid) {
+      showMessage(Object.values(validation.errors)[0], 'error')
+      return
+    }
   }
 
   try {
@@ -899,6 +904,12 @@ const exportAllConfigs = async () => {
 const handleJsonValidationChange = (result: JsonValidationResult) => {
   isJsonValid.value = result.isValid
   validationErrors.value = result.errors || []
+}
+
+// Handle form validation changes
+const handleValidationChange = (isValid: boolean, errors: Record<string, string>) => {
+  // 这里可以处理表单验证状态变化
+  console.log('Form validation changed:', { isValid, errors })
 }
 
 // Handle JSON import

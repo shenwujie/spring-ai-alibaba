@@ -97,7 +97,7 @@ public class McpService implements IMcpService {
 			configValidator.validateServerConfig(serverConfig, serverName);
 
 			// Get connection type
-			McpConfigType connectionType = serverConfig.getConnectionType();
+			McpConfigType connectionType = serverConfig.getConnectionTypeAsEnum();
 			logger.info("Using connection type for server '{}': {}", serverName, connectionType);
 
 			// Convert to JSON
@@ -113,7 +113,7 @@ public class McpService implements IMcpService {
 				// Set status, use from serverConfig if available, otherwise use default
 				// value
 				if (serverConfig.getStatus() != null) {
-					mcpConfigEntity.setStatus(serverConfig.getStatus());
+					mcpConfigEntity.setStatus(McpConfigStatus.valueOf(serverConfig.getStatus()));
 				}
 				else {
 					mcpConfigEntity.setStatus(McpConfigStatus.ENABLE);
@@ -125,7 +125,7 @@ public class McpService implements IMcpService {
 				// Update status, use from serverConfig if available, otherwise keep
 				// original value
 				if (serverConfig.getStatus() != null) {
-					mcpConfigEntity.setStatus(serverConfig.getStatus());
+					mcpConfigEntity.setStatus(McpConfigStatus.valueOf(serverConfig.getStatus()));
 				}
 			}
 
@@ -159,19 +159,19 @@ public class McpService implements IMcpService {
 		McpServerConfig serverConfig = new McpServerConfig(objectMapper);
 		serverConfig.setCommand(requestVO.getCommand());
 		serverConfig.setUrl(requestVO.getUrl());
-		serverConfig.setArgs(requestVO.getArgs());
-		serverConfig.setEnv(requestVO.getEnv());
+		serverConfig.setArgsAsList(requestVO.getArgs());
+		serverConfig.setEnvAsMap(requestVO.getEnv());
 
 		// Set status
 		if (requestVO.getStatus() != null) {
-			serverConfig.setStatus(McpConfigStatus.valueOf(requestVO.getStatus()));
+			serverConfig.setStatus(requestVO.getStatus());
 		}
 
 		// Validate server configuration
 		configValidator.validateServerConfig(serverConfig, requestVO.getMcpServerName());
 
 		// Get connection type
-		McpConfigType connectionType = serverConfig.getConnectionType();
+		McpConfigType connectionType = serverConfig.getConnectionTypeAsEnum();
 		logger.info("Using connection type for server '{}': {}", requestVO.getMcpServerName(), connectionType);
 
 		// Convert to JSON
@@ -198,7 +198,7 @@ public class McpService implements IMcpService {
 		mcpConfigEntity.setMcpServerName(requestVO.getMcpServerName());
 		mcpConfigEntity.setConnectionConfig(configJson);
 		mcpConfigEntity.setConnectionType(connectionType);
-		mcpConfigEntity.setStatus(serverConfig.getStatus());
+		mcpConfigEntity.setStatus(McpConfigStatus.valueOf(serverConfig.getStatus()));
 
 		// Save to database
 		McpConfigEntity savedEntity = mcpConfigRepository.save(mcpConfigEntity);

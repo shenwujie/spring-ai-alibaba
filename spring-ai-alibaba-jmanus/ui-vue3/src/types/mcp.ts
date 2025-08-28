@@ -1,80 +1,103 @@
-// MCP related type definitions
+/*
+ * Copyright 2025 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-// Basic MCP server interface
-export interface McpServer {
-  id: number
-  mcpServerName: string
-  connectionType: 'STUDIO' | 'SSE' | 'STREAMING'
-  connectionConfig: string
-  status: 'ENABLE' | 'DISABLE'
+/**
+ * MCP配置字段元数据接口
+ */
+export interface FieldMetadata {
+  fieldName: string
+  fieldType: string
+  dbField: string
+  dbJsonKey?: string
+  storageType: string
+  jsonName: string
+  jsonDefaultValue?: string
+  jsonRequired: boolean
+  displayName: string
+  displayDescription?: string
+  displayRequired: boolean
+  displayType: string
+  displayOptions?: string[]
+  displayValidation?: string
+  displayOrder: number
+  businessRequired: boolean
+  businessValidation?: string
+  dynamic: boolean
+  displayCondition?: string
+  displayRequiredCondition?: string
 }
 
-// Extended MCP server interface (includes UI fields)
-export interface ExtendedMcpServer extends McpServer {
-  args?: string // Frontend display as JSON string
-  env?: string // Frontend display as JSON string
-  url?: string
+/**
+ * 表单元数据接口
+ */
+export interface FormMetadata {
+  fields: FieldMetadata[]
+  validationRules: Record<string, any>
+  formSchema: Record<string, any>
+}
+
+/**
+ * 验证规则接口
+ */
+export interface ValidationRule {
+  required?: boolean
+  message?: string
+  minLength?: number
+  maxLength?: number
+  min?: number
+  max?: number
+  url?: boolean
+  email?: boolean
+  pattern?: string
+}
+
+/**
+ * JSON验证结果接口
+ */
+export interface JsonValidationResult {
+  isValid: boolean
+  errors?: string[]
+}
+
+/**
+ * MCP配置表单数据接口
+ */
+export interface McpConfigFormData {
+  mcpServerName: string
+  connectionType: 'STUDIO' | 'SSE' | 'STREAMING'
   command?: string
+  url?: string
+  args?: string
+  env?: string
+  status: 'ENABLE' | 'DISABLE'
 }
 
-// MCP server field request interface
-export interface McpServerFieldRequest {
+/**
+ * MCP服务器保存请求接口
+ */
+export interface McpServerSaveRequest {
+  id?: number
   connectionType: 'STUDIO' | 'SSE' | 'STREAMING'
   mcpServerName: string
-  status: 'ENABLE' | 'DISABLE'
   command?: string
   url?: string
   args?: string[]
   env?: Record<string, string>
-}
-
-// MCP server save request interface (merge create and update)
-export interface McpServerSaveRequest extends McpServerFieldRequest {
-  id?: number // Optional, with id for update, without id for create
-}
-
-// MCP server JSON import request interface
-export interface McpServerRequest {
-  connectionType: 'STUDIO' | 'SSE' | 'STREAMING'
-  configJson: string
-}
-
-// API response interface
-export interface ApiResponse<T = any> {
-  success: boolean
-  message?: string
-  data?: T
-}
-
-// Form data interface
-export interface McpConfigFormData {
-  mcpServerName: string
-  connectionType: 'STUDIO' | 'SSE' | 'STREAMING'
-  command: string
-  url: string
-  args: string // Frontend input as JSON string
-  env: string // Frontend input as JSON string
+  timeout?: number
+  retryCount?: number
+  headers?: Record<string, string>
   status: 'ENABLE' | 'DISABLE'
-}
-
-// Message type
-export type MessageType = 'success' | 'error' | 'info'
-
-// Message interface
-export interface Message {
-  show: boolean
-  text: string
-  type: MessageType
-}
-
-// Tab configuration interface
-export interface TabConfig {
-  name: string
-  label: string
-}
-
-// JSON validation result interface
-export interface JsonValidationResult {
-  isValid: boolean
-  errors?: string[]
 }

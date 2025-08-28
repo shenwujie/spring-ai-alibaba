@@ -137,8 +137,8 @@ public class McpTransportBuilder {
 	private McpClientTransport buildStudioTransport(McpServerConfig serverConfig, String serverName)
 			throws IOException {
 		String command = serverConfig.getCommand().trim();
-		List<String> args = serverConfig.getArgs();
-		Map<String, String> env = serverConfig.getEnv();
+		List<String> args = serverConfig.getArgsAsList();
+		Map<String, String> env = serverConfig.getEnvAsMap();
 
 		logger.debug("Building STUDIO transport for server: {} with command: {}", serverName, command);
 
